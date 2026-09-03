@@ -1,0 +1,8 @@
+.env
+__pycache__/
+.pytest_cache/
+*.pyc
+recovery.db
+.deps/
+node_modules/
+dist/

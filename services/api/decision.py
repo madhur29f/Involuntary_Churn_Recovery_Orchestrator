@@ -27,16 +27,33 @@ def decide(event: dict, attempts: int = 0, model_available: bool = True, now: da
         when = now + timedelta(days=2)
         return Decision(taxon.category, "retry_scheduled", when.isoformat(), None, "rule", None, "Model unavailable; conservative two-day fallback retry.")
     code = event.get("decline_code")
-    # Deliberately interpretable model proxy. Replaceable by services/model inference artifact.
-    if code == "insufficient_funds":
-        days, confidence, detail = 5, .74, "pay-cycle proximity"
-    elif code == "card_declined":
-        days, confidence, detail = 2, .61, "issuer declines often clear within 24–48 hours"
-    else:
-        days, confidence, detail = 1, .82, "transient technical-decline pattern"
-    when = now + timedelta(days=days)
-    return Decision(taxon.category, "retry_scheduled", when.isoformat(), None, "model", confidence,
-                    f"Model selected retry in {days} day(s) from {detail}; attempt {attempts + 1} of 3.")
+    try:
+        from services.model.predictor import predict_timing
+        prediction = predict_timing(event, attempts=attempts)
+        days = prediction["delay_days"]
+        confidence = prediction["confidence"]
+        reason = prediction["explanation"]
+        when = now + timedelta(days=days)
+        return Decision(
+            taxon.category,
+            "retry_scheduled",
+            when.isoformat(),
+            None,
+            "model",
+            confidence,
+            reason
+        )
+    except Exception as exc:
+        when = now + timedelta(days=2)
+        return Decision(
+            taxon.category,
+            "retry_scheduled",
+            when.isoformat(),
+            None,
+            "rule",
+            None,
+            f"Model fallback engaged ({type(exc).__name__}); conservative two-day retry."
+        )
 
 def as_payload(decision: Decision) -> dict:
     return asdict(decision)

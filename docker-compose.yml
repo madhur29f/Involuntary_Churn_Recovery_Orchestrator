@@ -2,10 +2,22 @@ services:
   api:
     build: { context: ., dockerfile: services/api/Dockerfile }
     ports: ["8000:8000"]
+    volumes: ["./services:/app/services"]
     environment:
       DATABASE_URL: postgresql://recovery:recovery@postgres:5432/recovery
       REDIS_URL: redis://redis:6379/0
+      TEMPORAL_ADDRESS: temporal:7233
+      ORCHESTRATION_MODE: temporal
     depends_on: [postgres, redis, temporal]
+  worker:
+    build: { context: ., dockerfile: services/api/Dockerfile }
+    command: ["python", "-m", "services.worker.main"]
+    volumes: ["./services:/app/services"]
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_TASK_QUEUE: recovery-orchestrator
+    depends_on: [temporal]
+    restart: on-failure
   postgres:
     image: postgres:16-alpine
     environment: { POSTGRES_USER: recovery, POSTGRES_PASSWORD: recovery, POSTGRES_DB: recovery }
@@ -13,10 +25,16 @@ services:
     volumes: ["postgres_data:/var/lib/postgresql/data", "./db/migrations:/docker-entrypoint-initdb.d:ro"]
   redis:
     image: redis:7-alpine
-    ports: ["6379:6379"]
   temporal:
     image: temporalio/auto-setup:1.25.2
-    environment: { DB: postgresql, POSTGRES_SEEDS: postgres, POSTGRES_USER: recovery, POSTGRES_PWD: recovery }
+    environment: { DB: postgres12, DB_PORT: 5432, POSTGRES_SEEDS: postgres, POSTGRES_USER: recovery, POSTGRES_PWD: recovery }
     depends_on: [postgres]
     ports: ["7233:7233"]
+  temporal-ui:
+    image: temporalio/ui:latest
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: "http://localhost:8088,http://localhost:8000"
+    depends_on: [temporal]
+    ports: ["8088:8080"]
 volumes: { postgres_data: {} }

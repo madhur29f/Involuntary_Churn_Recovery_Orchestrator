@@ -24,6 +24,16 @@ class RecoveryWorkflow:
         decision = None
         # This loop, including the maximum-attempts stopping rule, is workflow-owned.
         while self.attempt_count < 3:
+            # Card-network compliance floor: Visa/Mastercard mandate <= 15 retries in rolling 30 days
+            prior_30d = event.get("prior_attempts_30d", 0)
+            if prior_30d + self.attempt_count >= 15:
+                self.current_state = "stopped"
+                if not decision:
+                    decision = {"action": "stop", "category": "hard_decline", "reason": "capped_by_network_policy"}
+                decision["reason"] = "Visa/Mastercard 15-retry rolling limit reached. Capped by network policy."
+                return {"state": self.current_state, "attempt_count": self.attempt_count, "decision": decision,
+                        "terminal_reason": "capped_by_network_policy"}
+
             decision_event = event if policy != "naive" else {**event, "decline_code": "card_declined", "opted_out": False}
             decision = await workflow.execute_activity(
                 classify_recovery,

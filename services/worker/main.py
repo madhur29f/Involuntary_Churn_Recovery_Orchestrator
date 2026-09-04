@@ -4,6 +4,8 @@ from temporalio.worker import Worker
 from .workflows import RecoveryWorkflow
 from .activities import classify_recovery, evaluate_simulated_payment
 
+from services.api.store import get_system_state
+
 async def main():
     retries = 30
     client = None
@@ -18,9 +20,31 @@ async def main():
     if not client:
         raise RuntimeError("Could not connect to Temporal")
     print("Temporal Worker connected successfully. Starting listening loop...")
-    worker = Worker(client, task_queue=os.getenv("TEMPORAL_TASK_QUEUE", "recovery-orchestrator"),
-                    workflows=[RecoveryWorkflow], activities=[classify_recovery, evaluate_simulated_payment])
-    await worker.run()
+
+    while True:
+        if get_system_state("worker_chaos_paused", "0") == "1":
+            await asyncio.sleep(1)
+            continue
+
+        worker = Worker(
+            client,
+            task_queue=os.getenv("TEMPORAL_TASK_QUEUE", "recovery-orchestrator"),
+            workflows=[RecoveryWorkflow],
+            activities=[classify_recovery, evaluate_simulated_payment]
+        )
+        worker_task = asyncio.create_task(worker.run())
+        print("Worker polling task queue active.")
+
+        while not worker_task.done():
+            if get_system_state("worker_chaos_paused", "0") == "1":
+                print("[CHAOS CONTROL] Kill signal detected! Halting worker poller...")
+                worker_task.cancel()
+                try:
+                    await worker_task
+                except asyncio.CancelledError:
+                    pass
+                break
+            await asyncio.sleep(0.5)
 
 if __name__ == "__main__":
     asyncio.run(main())

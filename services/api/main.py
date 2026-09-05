@@ -13,7 +13,7 @@ from services.simulation.engine import population, event as sim_event, oracle
 from .orchestration import execute_recovery
 import math
 
-app = FastAPI(title="Involuntary Churn Recovery Orchestrator", version="1.0.0")
+app = FastAPI(title="Triage: Involuntary Churn Recovery Orchestrator", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,

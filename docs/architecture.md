@@ -1,13 +1,13 @@
-# Architecture & System Design: Involuntary Churn Recovery Orchestrator
+# Architecture & System Design: Triage (Involuntary Churn Recovery Orchestrator)
 
 **Track:** Razorpay AI Buildathon — Track 03: AI Revenue Recovery  
-**Role:** Decline-Aware Recovery Orchestration Layer
+**Product:** Triage (Decline-Aware Revenue Recovery Orchestrator)
 
 ---
 
 ## 1. System Overview
 
-The Involuntary Churn Recovery Orchestrator is an event-driven, durable recovery system designed to sit between billing systems (or Razorpay subscription webhooks) and payment processing. Rather than issuing naive, fixed-interval retries that trigger issuer fraud penalties and churn subscribers, the system:
+**Triage** is an event-driven, durable recovery system designed to sit between billing systems (or Razorpay subscription webhooks) and payment processing. Rather than issuing naive, fixed-interval retries that trigger issuer fraud penalties and churn subscribers, the system:
 1. **Classifies the exact failure reason** according to Razorpay's decline taxonomy.
 2. **Applies a deterministic rules safety floor** (hard fraud, card expiry, customer opt-outs, and merchant business configuration errors never enter blind retry loops).
 3. **Applies a scoped ML timing model** to soft/ambiguous declines (`insufficient_funds`, `card_declined`) to align retries with pay-cycle windows and clearance curves.

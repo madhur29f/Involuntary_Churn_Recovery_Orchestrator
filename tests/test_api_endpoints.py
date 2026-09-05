@@ -94,6 +94,7 @@ def test_webhook_signature_verification():
 def test_dashboard_endpoint():
     resp = client.get("/")
     assert resp.status_code == 200
+    assert "Triage" in resp.text
     assert "Involuntary Churn Recovery Orchestrator" in resp.text
     assert "text/html" in resp.headers["content-type"]
 

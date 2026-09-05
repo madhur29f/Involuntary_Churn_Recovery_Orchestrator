@@ -1,5 +1,5 @@
 """
-CLI Comparison Runner for Involuntary Churn Recovery Orchestrator.
+CLI Comparison Runner for Triage (Involuntary Churn Recovery Orchestrator).
 Runs reproducible simulations across naive baseline vs decline-aware orchestrator.
 Computes recovered revenue, recovery lift, and false-positive retries avoided.
 """
@@ -134,7 +134,7 @@ def run_comparison(seed: int = 42, size: int = 60, quiet: bool = False):
 
     if not quiet:
         print("=" * 72)
-        print("   INVOLUNTARY CHURN RECOVERY ORCHESTRATOR - POLICY COMPARISON")
+        print("   TRIAGE: INVOLUNTARY CHURN RECOVERY ORCHESTRATOR - POLICY COMPARISON")
         print("=" * 72)
         print(f" Cohort: {size} failed subscriptions (Seed: {seed})")
         print(f" Total At-Risk Revenue: INR {total_at_risk_paise / 100:,.2f}")

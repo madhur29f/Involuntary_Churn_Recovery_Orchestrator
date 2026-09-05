@@ -1,7 +1,7 @@
 # 5-Minute Pitch Video Script
 
 **Track:** Razorpay AI Buildathon — Track 03: AI Revenue Recovery  
-**Product:** Involuntary Churn Recovery Orchestrator  
+**Product:** Triage (Involuntary Churn Recovery Orchestrator)  
 **Format:** 5-Minute Video Pitch + Live Demo
 
 ---
@@ -46,5 +46,5 @@
 ---
 
 ## Part 5: Closing & The Ask (4:30 – 5:00)
-- **Summary:** The Involuntary Churn Recovery Orchestrator turns payment failures from a blunt hammer into an intelligent, compliant, and auditable revenue recovery engine.
+- **Summary:** Triage turns payment failures from a blunt hammer into an intelligent, compliant, and auditable revenue recovery engine.
 - **Call to Action:** Thank the Razorpay team and invite them to explore the live Swagger docs and Temporal workflow executions!

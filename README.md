@@ -109,6 +109,7 @@ flowchart TD
         STATS_CALC --> UI_CHART["Chart.js Distribution Chart"]
     end
 ```
+<img width="1380" height="2040" alt="image" src="https://github.com/user-attachments/assets/46b95880-7c4c-4ac1-8c57-bb89ca48ea79" />
 
 ---
 
@@ -126,6 +127,8 @@ Running on a standard cohort of $N=60$ failed subscriptions across reproducible 
 | **Stolen/Fraud Card Retries** | 6 retries (incurred penalties) | **0 retries (100% halted)** | **Zero issuer penalty flags** |
 | **Customer Expired Card Flow**| 0 self-serve links (churned) | 100% WhatsApp/Link Dispatched | **Self-serve 1-click update** |
 | **Duplicate Retries Under Crash**| Risk of double-charge | **0 (Strictly Guaranteed)** | **Durable Temporal state replay** |
+
+<img width="1958" height="1134" alt="Screenshot 2026-09-21 155232" src="https://github.com/user-attachments/assets/3e3f7112-49e5-40f8-8f3b-db9531b5f3aa" />
 
 ---
 
